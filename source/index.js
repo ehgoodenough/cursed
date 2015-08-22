@@ -2,16 +2,30 @@ window.React = require("react")
 window.Phlux = require("phlux")
 window.Loop = require("<scripts>/utilities/Loop")
 window.Input = require("<scripts>/utilities/Input")
+window.Tiledmap = require("<scripts>/utilities/Tiledmap")
 
 window.WIDTH = 16
 window.HEIGHT = 9
 
+var map = new Tiledmap(require("<assets>/tilemaps/tilemap.json"))
+var World = {width: map.width, height: map.height, tiles: {}}
+for(var x = 0; x < map.width; x++) {
+    for(var y = 0; y < map.height; y++) {
+        var tile = map.layers[0].tiles[x + "x" + y]
+        World.tiles[x + "x" + y] = {
+            isWall: !!tile.properties && !!tile.properties.isWall
+        }
+    }
+}
+
 var GameStore = Phlux.createStore({
-    data: {
-        width: 1,
-        height: 1,
-        x: WIDTH / 2,
-        y: HEIGHT / 2,
+    initiateStore: function() {
+        this.data.archaeologist = {
+            width: 1,
+            height: 1,
+            x: WIDTH / 2,
+            y: HEIGHT / 2,
+        }
     }
 })
 
@@ -25,20 +39,20 @@ var GameView = React.createClass({
     render: function() {
         return (
             <FrameView aspect-ratio="16x9">
-                <View data={this.state.game}/>
+                <View data={this.state.game.archaeologist}/>
             </FrameView>
         )
     },
     componentDidMount: function() {
         Loop(function(tick) {
             if(Input.isDown("W")) {
-                GameStore.data.y -= tick * 3
+                GameStore.data.archaeologist.y -= tick * 3
             } else if(Input.isDown("S")) {
-                GameStore.data.y += tick * 3
+                GameStore.data.archaeologist.y += tick * 3
             } if(Input.isDown("A")) {
-                GameStore.data.x -= tick * 3
+                GameStore.data.archaeologist.x -= tick * 3
             } else if(Input.isDown("D")) {
-                GameStore.data.x += tick * 3
+                GameStore.data.archaeologist.x += tick * 3
             }
             GameStore.trigger()
         })

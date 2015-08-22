@@ -33,6 +33,13 @@
             },
          "spacing":0,
          "tileheight":32,
+         "tileproperties":
+            {
+             "1":
+                {
+                 "isWall":"true"
+                }
+            },
          "tilewidth":32
         }],
  "tilewidth":32,
