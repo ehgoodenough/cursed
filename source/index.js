@@ -26,8 +26,8 @@ var GameStore = Phlux.createStore({
         this.data.archaeologist = {
             width: 1,
             height: 1,
-            x: WIDTH / 2,
-            y: HEIGHT / 2 + 1.5,
+            x: WIDTH / 2 + 0.5,
+            y: HEIGHT / 2 + 0.5,
         }
     }
 })
@@ -35,6 +35,7 @@ var GameStore = Phlux.createStore({
 var View = require("<scripts>/views/View")
 var WorldView = require("<scripts>/views/WorldView")
 var FrameView = require("<scripts>/views/FrameView")
+var CameraView = require("<scripts>/views/CameraView")
 
 var GameView = React.createClass({
     mixins: [
@@ -43,8 +44,10 @@ var GameView = React.createClass({
     render: function() {
         return (
             <FrameView aspect-ratio="16x9">
-                <WorldView data={World}/>
-                <View data={this.state.game.archaeologist}/>
+                <CameraView target={this.state.game.archaeologist} bounds={World}>
+                    <WorldView data={World}/>
+                    <View data={this.state.game.archaeologist}/>
+                </CameraView>
             </FrameView>
         )
     },
