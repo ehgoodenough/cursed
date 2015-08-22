@@ -1,15 +1,26 @@
 window.React = require("react")
+window.Phlux = require("phlux")
 
-var GameFrame = require("<scripts>/views/GameFrame")
+var GameStore = Phlux.createStore({
+    data: {
+        //?!
+    }
+})
 
-var Game = React.createClass({
+var View = require("<scripts>/views/View")
+var FrameView = require("<scripts>/views/FrameView")
+
+var GameView = React.createClass({
+    mixins: [
+        Phlux.connectStore(GameStore, "game")
+    ],
     render: function() {
         return (
-            <GameFrame>
-                Hello World!!
-            </GameFrame>
+            <FrameView aspect-ratio="4x3">
+                <View></View>
+            </FrameView>
         )
     }
 })
 
-React.render(<Game/>, document.body)
+React.render(<GameView/>, document.body)
