@@ -41,7 +41,11 @@ var Input = {
     setUp: function(key) {
         this.data[key] = -1
     },
-    data: new Object()
+    data: new Object(),
+    mouse: {
+        x: 0,
+        y: 0,
+    },
 }
 
 document.addEventListener("keydown", function(event) {
@@ -52,6 +56,27 @@ document.addEventListener("keydown", function(event) {
 
 document.addEventListener("keyup", function(event) {
     Input.setUp(vkey[event.keyCode])
+})
+
+document.addEventListener("mousemove", function(event) {
+    var x = event.clientX
+    var y = event.clientY
+
+    var html = document.getElementById("frame-view")
+    var css = window.getComputedStyle(html)
+    var scale = Number(css.fontSize.match(/(\d+(\.\d+)?)px$/)[1])
+    var offset = {
+        x: html.offsetLeft,
+        y: html.offsetTop
+    }
+
+    x -= offset.x
+    y -= offset.y
+    x /= scale
+    y /= scale
+
+    Input.mouse.x = x
+    Input.mouse.y = y
 })
 
 module.exports = Input

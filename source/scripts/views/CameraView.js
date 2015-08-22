@@ -9,15 +9,8 @@ var CameraView = React.createClass({
     renderStyle: function() {
         var x = this.props.target.x - (WIDTH / 2)
         var y = this.props.target.y - (HEIGHT / 2)
-        if(x < 0) {
-            x = 0
-        } if(y < 0) {
-            y = 0
-        } if(x > this.props.bounds.width - WIDTH) {
-            x = this.props.bounds.width - WIDTH
-        } if(y > this.props.bounds.height - HEIGHT) {
-            y = this.props.bounds.height - HEIGHT
-        }
+        x = Math.max(0, Math.min(x, this.props.bounds.width - WIDTH))
+        y = Math.max(0, Math.min(y, this.props.bounds.height - HEIGHT))
         return {
             top: y * -1 + "em",
             left: x * -1 + "em",

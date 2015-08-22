@@ -21,13 +21,13 @@ for(var x = 0; x < map.width; x++) {
     }
 }
 
-var GameStore = Phlux.createStore({
+window.GameStore = Phlux.createStore({
     initiateStore: function() {
         this.data.archaeologist = {
             width: 1,
             height: 1,
-            x: WIDTH / 2 + 0.5,
-            y: HEIGHT / 2 + 0.5,
+            x: WIDTH / 2 + 0.5 - 0.5,
+            y: HEIGHT / 2 + 0.5 - 0.5,
         }
     }
 })
@@ -53,15 +53,30 @@ var GameView = React.createClass({
     },
     componentDidMount: function() {
         Loop(function(tick) {
+            var archaeologist = GameStore.data.archaeologist
+            // player input
             if(Input.isDown("W")) {
-                GameStore.data.archaeologist.y -= tick * 3
+                archaeologist.y -= tick * 3
             } else if(Input.isDown("S")) {
-                GameStore.data.archaeologist.y += tick * 3
+                archaeologist.y += tick * 3
             } if(Input.isDown("A")) {
-                GameStore.data.archaeologist.x -= tick * 3
+                archaeologist.x -= tick * 3
             } else if(Input.isDown("D")) {
-                GameStore.data.archaeologist.x += tick * 3
+                archaeologist.x += tick * 3
             }
+            var mx = Input.mouse.x
+            var my = Input.mouse.y
+            var cx = archaeologist.x - (WIDTH / 2)
+            var cy = archaeologist.y - (HEIGHT / 2)
+            cx = Math.max(0, Math.min(cx, World.width - WIDTH))
+            cy = Math.max(0, Math.min(cy, World.height - HEIGHT))
+            mx += cx
+            my += cy
+
+            var r = Math.atan2(my - archaeologist.y, mx - archaeologist.x) * 180 / Math.PI
+            console.log(r)
+
+            GameStore.data.archaeologist.r = r
             GameStore.trigger()
         })
     }
