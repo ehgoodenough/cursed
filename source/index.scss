@@ -1,13 +1,12 @@
-@import "./styles/references/Colors.scss";
-@import "./styles/references/Defaults.scss";
-@import "./styles/components/GameFrame.scss";
+@import "./styles/Defaults.scss";
+@import "./styles/GameFrame.scss";
 
 html
 {
-    background-color: $black;
+    background-color: #111;
 
     #game-frame
     {
-    	background-color: $white;
+    	background-color: #EEE;
     }
 }
