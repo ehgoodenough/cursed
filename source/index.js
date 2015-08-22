@@ -12,8 +12,11 @@ var World = {width: map.width, height: map.height, tiles: {}}
 for(var x = 0; x < map.width; x++) {
     for(var y = 0; y < map.height; y++) {
         var tile = map.layers[0].tiles[x + "x" + y]
+        var isWall = !!tile.properties && !!tile.properties.isWall
         World.tiles[x + "x" + y] = {
-            isWall: !!tile.properties && !!tile.properties.isWall
+            x: x, y: y,
+            isWall: isWall,
+            color: !isWall ? "#EEE" : "#111",
         }
     }
 }
@@ -24,12 +27,13 @@ var GameStore = Phlux.createStore({
             width: 1,
             height: 1,
             x: WIDTH / 2,
-            y: HEIGHT / 2,
+            y: HEIGHT / 2 + 1.5,
         }
     }
 })
 
 var View = require("<scripts>/views/View")
+var WorldView = require("<scripts>/views/WorldView")
 var FrameView = require("<scripts>/views/FrameView")
 
 var GameView = React.createClass({
@@ -39,6 +43,7 @@ var GameView = React.createClass({
     render: function() {
         return (
             <FrameView aspect-ratio="16x9">
+                <WorldView data={World}/>
                 <View data={this.state.game.archaeologist}/>
             </FrameView>
         )
