@@ -16,7 +16,7 @@ var GameView = React.createClass({
     ],
     render: function() {
         return (
-            <FrameView aspect-ratio="4x3">
+            <FrameView aspect-ratio="16x9">
                 <View></View>
             </FrameView>
         )
