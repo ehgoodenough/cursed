@@ -28,6 +28,7 @@ window.GameStore = Phlux.createStore({
             height: 1,
             x: WIDTH / 2 + 0.5 - 0.5,
             y: HEIGHT / 2 + 0.5 - 0.5,
+            image: "./assets/images/kid.svg",
         }
     }
 })
@@ -74,9 +75,8 @@ var GameView = React.createClass({
             my += cy
 
             var r = Math.atan2(my - archaeologist.y, mx - archaeologist.x) * 180 / Math.PI
-            console.log(r)
 
-            GameStore.data.archaeologist.r = r
+            GameStore.data.archaeologist.r = r - 90
             GameStore.trigger()
         })
     }

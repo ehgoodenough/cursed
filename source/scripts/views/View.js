@@ -12,7 +12,11 @@ var View = React.createClass({
             top: this.props.data.y - (this.props.data.height / 2) + "em",
             left: this.props.data.x - (this.props.data.width / 2) + "em",
             transform: "rotate(" + this.props.data.r + "deg)",
-            backgroundColor: "#C00",
+            backgroundSize: "contain",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            backgroundImage: "url(" + this.props.data.image + ")",
+            backgroundColor: "rgba(" + (255 / 2) + ", 0, 0, 0.5)",
         }
     }
 })
