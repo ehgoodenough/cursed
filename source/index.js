@@ -1,5 +1,7 @@
 window.React = require("react")
 window.Phlux = require("phlux")
+window.jQuery = require("jquery")
+window.jCanvas = require("jcanvas")(jQuery, window)
 window.Loop = require("<scripts>/utilities/Loop")
 window.Input = require("<scripts>/utilities/Input")
 window.Tiledmap = require("<scripts>/utilities/Tiledmap")
@@ -8,24 +10,23 @@ window.WIDTH = 16
 window.HEIGHT = 9
 window.px = 64
 
+window.Colors = {
+    1: "#0A1E31", //#1
+    2: "#1F3C4E", //#2
+    3: "#82AB8E", //#3
+    4: "#AABF9C", //#4
+    5: "#C7D3B7", //#5
+}
+
 var map = new Tiledmap(require("<assets>/tilemaps/tilemap.json"))
 window.World = {width: map.width, height: map.height, tiles: {}}
 for(var x = 0; x < map.width; x++) {
     for(var y = 0; y < map.height; y++) {
         var tile = map.layers[0].tiles[x + "x" + y]
         var isWall = !!tile.properties && !!tile.properties.isWall
-        var image = "./assets/images/tiles/floor.png"
         var seed = Math.ceil(Math.random() * 4)
-        if(isWall) {
-            image = "./assets/images/tiles/"
-            image += "wall"
-            image += seed
-            image += "b"
-            image += ".png"
-        }
         World.tiles[x + "x" + y] = {
             x: x, y: y,
-            image: image,
             isWall: isWall,
             seed: seed,
         }
@@ -33,13 +34,20 @@ for(var x = 0; x < map.width; x++) {
 }
 
 window.GameStore = Phlux.createStore({
-    initiateStore: function() {
-        this.data.archaeologist = {
+    data: {
+        archaeologist: {
             width: 1,
             height: 1,
-            x: WIDTH / 2 + 0.5 - 0.5,
-            y: HEIGHT / 2 + 0.5 - 0.5,
-            image: "./assets/images/kid.svg",
+            x: 7 + 0.5,
+            y: 10 + 0.5,
+            color: Colors[3]
+        },
+        monster: {
+            x: 9 + 0.5,
+            y: 10 + 0.5,
+            width: 1.5,
+            height: 1.5,
+            color: Colors[1]
         }
     }
 })
@@ -58,7 +66,7 @@ var GameView = React.createClass({
             <FrameView aspect-ratio="16x9">
                 <CameraView target={this.state.game.archaeologist} bounds={World}>
                     <WorldView data={World} target={this.state.game.archaeologist}/>
-                    <View data={this.state.game.archaeologist}/>
+                    <View data={this.state.game.archaeologist} monster={this.state.game.monster}/>
                 </CameraView>
             </FrameView>
         )

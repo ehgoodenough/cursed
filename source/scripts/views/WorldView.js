@@ -1,6 +1,3 @@
-window.jQuery = require("jquery")
-window.jCanvas = require("jcanvas")(jQuery, window)
-
 var WorldView = React.createClass({
     render: function() {
         return (
@@ -20,14 +17,25 @@ var WorldView = React.createClass({
         var canvas = jQuery(this.refs.canvas.getDOMNode())
         for(var coords in this.props.data.tiles) {
             var tile = this.props.data.tiles[coords]
-            canvas.drawImage({
-                width: px,
-                height: px,
-                x: tile.x * px,
-                y: tile.y * px,
-                fromCenter: false,
-                source: tile.image,
-            })
+            if(tile.isWall) {
+                canvas.drawImage({
+                    source: "./assets/images/tiles/wall" + tile.seed + "a.png",
+                    fromCenter: false,
+                    x: tile.x * px,
+                    y: tile.y * px,
+                    height: px,
+                    width: px,
+                })
+            } else {
+                canvas.drawRect({
+                    fillStyle: "#352B31",
+                    fromCenter: false,
+                    x: tile.x * px,
+                    y: tile.y * px,
+                    height: px,
+                    width: px,
+                })
+            }
         }
     },
     shouldComponentUpdate: function(props) {

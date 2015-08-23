@@ -1,9 +1,11 @@
+var size = 8
+
 var View = React.createClass({
     render: function() {
         return (
             <div>
                 <canvas ref="flashlight"
-                    width={9 * px} height={9 * px}
+                    width={size * px} height={size * px}
                     style={this.renderFlashlightStyle()}/>
                 <div ref="entity" style={this.renderEntityStyle()}/>
             </div>
@@ -20,53 +22,70 @@ var View = React.createClass({
             backgroundSize: "contain",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
-            //backgroundImage: "url(" + this.props.data.image + ")",
-            backgroundColor: "#C00",
+            backgroundColor: this.props.data.color,
         }
     },
     renderFlashlightStyle: function() {
         return {
-            width: "9em",
-            height: "9em",
+            width: size + "em",
+            height: size + "em",
             position: "absolute",
-            top: Math.floor(this.props.data.y) - 4 + "em",
-            left: Math.floor(this.props.data.x) - 4 + "em",
-            //backgroundColor: "rgba(155, 0, 0, 0.5)",
+            top: this.props.data.y - (size / 2) + "em",
+            left: this.props.data.x - (size / 2) + "em",
+            //backgroundColor: "rgba(155, 0, 0, 0.15)",
         }
     },
-    renderFlashlight: function() {
-        var x = Math.floor(this.props.data.x)
-        var y = Math.floor(this.props.data.y)
+    renderFlashlightCanvas: function() {
         var canvas = jQuery(this.refs.flashlight.getDOMNode())
-        canvas.clearCanvas()
-        canvas.drawSlice({
-            fillStyle: "orange",
-            x: (this.props.data.x - x + 4) * px,
-            y: (this.props.data.y - y + 4) * px,
-            radius: 200,
-            start: this.props.data.r + 180 - 40,
-            end: this.props.data.r + 180 + 40,
-            mask: true,
-        })
-        for(var tx = x - 4; tx <= x + 4; tx++) {
-            for(var ty = y - 4; ty <= y + 4; ty++) {
-                var tile = World.tiles[tx + "x" + ty]
-                if(!tile) {continue}
-                if(!tile.isWall) {continue}
-                canvas.drawImage({
-                    width: px,
-                    height: px,
-                    x: (tx - x + 4) * px,
-                    y: (ty - y + 4) * px,
-                    fromCenter: false,
-                    source: "./assets/images/tiles/wall" + tile.seed + "a.png",
-                })
-            }
-        }
         canvas.restoreCanvas()
+        canvas.clearCanvas()
+        var line = {
+            mask: true,
+            closed: true,
+            rounded: true,
+            opacity: 0.5,
+            fillStyle: "#C7D3B7",
+        }
+        var x = (size / 2) * px
+        var y = (size / 2) * px
+        line["x1"] = x
+        line["y1"] = y
+        var index = 2
+        var max_arc = 60
+        var max_radius = 3.5
+        var angle = this.props.data.r - 90
+        for(var arc = -(max_arc / 2); arc <= +(max_arc / 2); arc += 2) {
+            var arc_x = Math.cos((angle + arc) * Math.PI / 180)
+            var arc_y = Math.sin((angle + arc) * Math.PI / 180)
+            var max_radius = 3.5
+            for(var radius = 0; radius < max_radius; radius += 0.05) {
+                var tile_x = Math.floor(this.props.data.x - (arc_x * radius))
+                var tile_y = Math.floor(this.props.data.y - (arc_y * radius))
+                var tile = World.tiles[tile_x + "x" + tile_y]
+                if(!!tile && !!tile.isWall) {
+                    max_radius = radius
+                    break
+                }
+            }
+            line["x" + index] = x - (arc_x * max_radius * px)
+            line["y" + index] = y - (arc_y * max_radius * px)
+            index += 1
+        }
+        canvas.drawLine(line)
+
+        var monster_x = this.props.monster.x - (this.props.data.x - (size / 2))
+        var monster_y = this.props.monster.y - (this.props.data.y - (size / 2))
+        console.log(monster_x)
+        canvas.drawRect({
+            x: monster_x * px,
+            y: monster_y * px,
+            fillStyle: this.props.monster.color,
+            width: this.props.monster.width * px,
+            height: this.props.monster.height * px,
+        })
     },
     componentDidUpdate: function() {
-        this.renderFlashlight()
+        this.renderFlashlightCanvas()
     }
 })
 
