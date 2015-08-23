@@ -19,7 +19,7 @@ var WorldView = React.createClass({
             var tile = this.props.data.tiles[coords]
             if(tile.isWall) {
                 canvas.drawImage({
-                    source: "./assets/images/tiles/wall" + tile.seed + "a.png",
+                    source: "./assets/images/tiles/wall" + tile.seed + ".png",
                     fromCenter: false,
                     x: tile.x * px,
                     y: tile.y * px,
@@ -28,7 +28,7 @@ var WorldView = React.createClass({
                 })
             } else {
                 canvas.drawRect({
-                    fillStyle: "#352B31",
+                    fillStyle: Colors[1],
                     fromCenter: false,
                     x: tile.x * px,
                     y: tile.y * px,
