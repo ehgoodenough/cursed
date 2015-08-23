@@ -75,7 +75,6 @@ var View = React.createClass({
 
         var monster_x = this.props.monster.x - (this.props.data.x - (size / 2))
         var monster_y = this.props.monster.y - (this.props.data.y - (size / 2))
-        console.log(monster_x)
         canvas.drawRect({
             x: monster_x * px,
             y: monster_y * px,

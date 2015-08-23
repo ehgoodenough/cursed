@@ -74,16 +74,36 @@ var GameView = React.createClass({
     componentDidMount: function() {
         Loop(function(tick) {
             var archaeologist = GameStore.data.archaeologist
-            // player input
             if(Input.isDown("W")) {
-                archaeologist.y -= tick * 3
+                archaeologist.vy = -3 * tick
             } else if(Input.isDown("S")) {
-                archaeologist.y += tick * 3
+                archaeologist.vy = +3 * tick
+            } else {
+                archaeologist.vy = 0
             } if(Input.isDown("A")) {
-                archaeologist.x -= tick * 3
+                archaeologist.vx = -3 * tick
             } else if(Input.isDown("D")) {
-                archaeologist.x += tick * 3
+                archaeologist.vx = +3 * tick
+            } else {
+                archaeologist.vx = 0
             }
+            var tx = Math.floor(archaeologist.x)
+            var ty = Math.floor(archaeologist.y + archaeologist.vy)
+            if(!!World.tiles[tx + "x" + ty]
+            && !World.tiles[tx + "x" + ty].isWall) {
+                archaeologist.y += archaeologist.vy
+            } else {
+                archaeologist.vy = 0
+            }
+            tx = Math.floor(archaeologist.x + archaeologist.vx)
+            ty = Math.floor(archaeologist.y + archaeologist.vy)
+            if(!!World.tiles[tx + "x" + ty]
+            && !World.tiles[tx + "x" + ty].isWall) {
+                archaeologist.x += archaeologist.vx
+            } else {
+                archaeologist.vx = 0
+            }
+
             var mx = Input.mouse.x
             var my = Input.mouse.y
             var cx = archaeologist.x - (WIDTH / 2)
