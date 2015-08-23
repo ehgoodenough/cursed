@@ -23,7 +23,7 @@ window.World = {width: map.width, height: map.height, tiles: {}}
 for(var x = 0; x < map.width; x++) {
     for(var y = 0; y < map.height; y++) {
         var tile = map.layers[0].tiles[x + "x" + y]
-        var isWall = !!tile.properties && !!tile.properties.isWall
+        var isWall = !!tile && !!tile.properties && !!tile.properties.isWall
         var seed = Math.ceil(Math.random() * 4)
         World.tiles[x + "x" + y] = {
             x: x, y: y,
@@ -38,15 +38,15 @@ window.GameStore = Phlux.createStore({
         archaeologist: {
             width: 1,
             height: 1,
-            x: 7 + 0.5,
-            y: 10 + 0.5,
+            x: 7,
+            y: 10,
             color: Colors[3]
         },
         monster: {
             x: 9 + 0.5,
             y: 10 + 0.5,
-            width: 1.5,
-            height: 1.5,
+            width: 0.75,
+            height: 0.75,
             color: Colors[1]
         }
     }
