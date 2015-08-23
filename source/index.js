@@ -2,6 +2,9 @@ window.React = require("react")
 window.Phlux = require("phlux")
 window.jQuery = require("jquery")
 window.jCanvas = require("jcanvas")(jQuery, window)
+window.Firebase = require("firebase")
+window.ShortID = require("shortid")
+
 window.Loop = require("<scripts>/utilities/Loop")
 window.Input = require("<scripts>/utilities/Input")
 window.Tiledmap = require("<scripts>/utilities/Tiledmap")
@@ -33,7 +36,18 @@ for(var x = 0; x < map.width; x++) {
     }
 }
 
+var firebase = new Firebase("https://opob.firebaseio.com/")
+
 window.GameStore = Phlux.createStore({
+    initiateStore: function() {
+        firebase.on("value", function(data) {
+            this.data = data.val()
+            this.trigger()
+        }.bind(this))
+    }
+})
+
+/*
     data: {
         archaeologist: {
             width: 1,
@@ -49,8 +63,8 @@ window.GameStore = Phlux.createStore({
             height: 0.75,
             color: Colors[1]
         }
-    }
-})
+    },
+*/
 
 var View = require("<scripts>/views/View")
 var WorldView = require("<scripts>/views/WorldView")
@@ -62,62 +76,78 @@ var GameView = React.createClass({
         Phlux.connectStore(GameStore, "game")
     ],
     render: function() {
+        var player = null
+        if(!!this.state.game
+        && !!this.state.game.players) {
+            player = this.state.game.players[myid]
+        }
         return (
             <FrameView aspect-ratio="16x9">
-                <CameraView target={this.state.game.archaeologist} bounds={World}>
-                    <WorldView data={World} target={this.state.game.archaeologist}/>
-                    <View data={this.state.game.archaeologist} monster={this.state.game.monster}/>
+                <CameraView target={player} bounds={World}>
+                    <WorldView data={World}/>
+                    {this.renderPlayers()}
                 </CameraView>
             </FrameView>
         )
     },
+    renderPlayers: function() {
+        var renderings = []
+        if(!!this.state.game
+        && !!this.state.game.players) {
+            for(var id in this.state.game.players) {
+                var player = this.state.game.players[id]
+                renderings.push(
+                    <View key={id}
+                        data={player}
+                        monster={{}}/>
+                )
+            }
+        }
+        return renderings
+    },
     componentDidMount: function() {
-        Loop(function(tick) {
-            var archaeologist = GameStore.data.archaeologist
-            if(Input.isDown("W")) {
-                archaeologist.vy = -3 * tick
-            } else if(Input.isDown("S")) {
-                archaeologist.vy = +3 * tick
-            } else {
-                archaeologist.vy = 0
-            } if(Input.isDown("A")) {
-                archaeologist.vx = -3 * tick
-            } else if(Input.isDown("D")) {
-                archaeologist.vx = +3 * tick
-            } else {
-                archaeologist.vx = 0
-            }
-            var tx = Math.floor(archaeologist.x)
-            var ty = Math.floor(archaeologist.y + archaeologist.vy)
-            if(!!World.tiles[tx + "x" + ty]
-            && !World.tiles[tx + "x" + ty].isWall) {
-                archaeologist.y += archaeologist.vy
-            } else {
-                archaeologist.vy = 0
-            }
-            tx = Math.floor(archaeologist.x + archaeologist.vx)
-            ty = Math.floor(archaeologist.y + archaeologist.vy)
-            if(!!World.tiles[tx + "x" + ty]
-            && !World.tiles[tx + "x" + ty].isWall) {
-                archaeologist.x += archaeologist.vx
-            } else {
-                archaeologist.vx = 0
-            }
-
-            var mx = Input.mouse.x
-            var my = Input.mouse.y
-            var cx = archaeologist.x - (WIDTH / 2)
-            var cy = archaeologist.y - (HEIGHT / 2)
-            cx = Math.max(0, Math.min(cx, World.width - WIDTH))
-            cy = Math.max(0, Math.min(cy, World.height - HEIGHT))
-            mx += cx
-            my += cy
-
-            var r = Math.atan2(my - archaeologist.y, mx - archaeologist.x) * 180 / Math.PI
-
-            GameStore.data.archaeologist.r = r - 90
-            GameStore.trigger()
+        window.myid = ShortID.generate()
+        firebase.child("players").child(myid).set({
+            id: myid,
+            x: 2,
+            y: 2,
+            r: 0,
         })
+        firebase.child("players").child(myid).onDisconnect().remove()
+        Loop(function(tick) {
+            if(!this.state.game
+            || !this.state.game.players) {
+                return
+            }
+            var player = this.state.game.players[myid]
+            var vx = 0
+            var vy = 0
+            if(Input.isDown("W")) {
+                vy = -3 * tick
+            } else if(Input.isDown("S")) {
+                vy = +3 * tick
+            } if(Input.isDown("A")) {
+                vx = -3 * tick
+            } else if(Input.isDown("D")) {
+                vx = +3 * tick
+            }
+            var tx = Math.floor(player.x)
+            var ty = Math.floor(player.y + vy)
+            if(!!World.tiles[tx + "x" + ty]
+            && !World.tiles[tx + "x" + ty].isWall) {
+                player.y += vy
+            }
+            ty = Math.floor(player.y)
+            tx = Math.floor(player.x + vx)
+            if(!!World.tiles[tx + "x" + ty]
+            && !World.tiles[tx + "x" + ty].isWall) {
+                player.x += vx
+            }
+            var mx = Input.mouse.x + Math.max(0, Math.min(player.x - (WIDTH / 2), World.width - WIDTH))
+            var my = Input.mouse.y + Math.max(0, Math.min(player.y - (HEIGHT / 2), World.height - HEIGHT))
+            player.r = (Math.atan2(my - player.y, mx - player.x) * 180 / Math.PI) - 90
+            firebase.child("players").child(player.id).update(player)
+        }.bind(this))
     }
 })
 

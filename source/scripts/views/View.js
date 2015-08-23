@@ -12,17 +12,19 @@ var View = React.createClass({
         )
     },
     renderEntityStyle: function() {
+        var width = 1
+        var height = 1
         return {
             position: "absolute",
-            width: this.props.data.width + "em",
-            height: this.props.data.height + "em",
-            top: this.props.data.y - (this.props.data.height / 2) + "em",
-            left: this.props.data.x - (this.props.data.width / 2) + "em",
+            width: width + "em",
+            height: height + "em",
+            top: this.props.data.y - (height / 2) + "em",
+            left: this.props.data.x - (width / 2) + "em",
             transform: "rotate(" + this.props.data.r + "deg)",
             backgroundSize: "contain",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
-            backgroundColor: this.props.data.color,
+            backgroundColor: Colors[3],
         }
     },
     renderFlashlightStyle: function() {
