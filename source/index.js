@@ -6,17 +6,28 @@ window.Tiledmap = require("<scripts>/utilities/Tiledmap")
 
 window.WIDTH = 16
 window.HEIGHT = 9
+window.px = 64
 
 var map = new Tiledmap(require("<assets>/tilemaps/tilemap.json"))
-var World = {width: map.width, height: map.height, tiles: {}}
+window.World = {width: map.width, height: map.height, tiles: {}}
 for(var x = 0; x < map.width; x++) {
     for(var y = 0; y < map.height; y++) {
         var tile = map.layers[0].tiles[x + "x" + y]
         var isWall = !!tile.properties && !!tile.properties.isWall
+        var image = "./assets/images/tiles/floor.png"
+        var seed = Math.ceil(Math.random() * 4)
+        if(isWall) {
+            image = "./assets/images/tiles/"
+            image += "wall"
+            image += seed
+            image += "b"
+            image += ".png"
+        }
         World.tiles[x + "x" + y] = {
             x: x, y: y,
+            image: image,
             isWall: isWall,
-            color: !isWall ? "#EEE" : "#111",
+            seed: seed,
         }
     }
 }
@@ -46,7 +57,7 @@ var GameView = React.createClass({
         return (
             <FrameView aspect-ratio="16x9">
                 <CameraView target={this.state.game.archaeologist} bounds={World}>
-                    <WorldView data={World}/>
+                    <WorldView data={World} target={this.state.game.archaeologist}/>
                     <View data={this.state.game.archaeologist}/>
                 </CameraView>
             </FrameView>

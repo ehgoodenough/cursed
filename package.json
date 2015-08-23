@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "gulp-autoprefixer": "^2.3.1",
+    "jcanvas": "^15.8.17",
+    "jquery": "^2.1.4",
     "phlux": "^1.0.5",
     "raf": "^3.1.0",
     "react": "~0.12.2",

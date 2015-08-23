@@ -1,4 +1,5 @@
-var px = 64
+window.jQuery = require("jquery")
+window.jCanvas = require("jcanvas")(jQuery, window)
 
 var WorldView = React.createClass({
     render: function() {
@@ -16,18 +17,18 @@ var WorldView = React.createClass({
         }
     },
     renderCanvas: function() {
-        var canvas = this.getCanvas()
+        var canvas = jQuery(this.refs.canvas.getDOMNode())
         for(var coords in this.props.data.tiles) {
             var tile = this.props.data.tiles[coords]
-            canvas.fillStyle = "#111"
-            canvas.textAlign = "center"
-            canvas.fillText(tile.x + "x" + tile.y, (tile.x + 0.5) * px, (tile.y + 0.5) * px)
-            canvas.fillStyle = tile.color
-            canvas.fillRect(tile.x * px, tile.y * px, px, px)
+            canvas.drawImage({
+                width: px,
+                height: px,
+                x: tile.x * px,
+                y: tile.y * px,
+                fromCenter: false,
+                source: tile.image,
+            })
         }
-    },
-    getCanvas: function() {
-        return this.refs.canvas.getDOMNode().getContext("2d")
     },
     shouldComponentUpdate: function(props) {
         return false
