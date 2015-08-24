@@ -24,6 +24,7 @@ var View = React.createClass({
             backgroundSize: "contain",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
+            //backgroundImage: "url(./assets/images/human.svg)",
             backgroundColor: Colors[3],
         }
     },
@@ -56,7 +57,7 @@ var View = React.createClass({
         var max_arc = 60
         var max_radius = 3.5
         var angle = this.props.data.r - 90
-        for(var arc = -(max_arc / 2); arc <= +(max_arc / 2); arc += 2) {
+        for(var arc = -(max_arc / 2); arc <= +(max_arc / 2); arc += 1) {
             var arc_x = Math.cos((angle + arc) * Math.PI / 180)
             var arc_y = Math.sin((angle + arc) * Math.PI / 180)
             var max_radius = 3.5
